@@ -1,7 +1,9 @@
 // src/Scene.ts
 import * as THREE from 'three';
+import { getRapier } from './physics.js';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { createArenaFloor, createArenaWalls, createCrate, createBuilding, ARENA_SIZE } from './map/MapGenerator.js';
+import { createArenaFloor, createArenaWalls, createCrate, ARENA_SIZE } from './map/MapGenerator.js';
 
 export class CustomScene extends THREE.Scene {
   private meshes: THREE.Object3D[] = [];
@@ -42,9 +44,9 @@ export class CustomScene extends THREE.Scene {
     try {
       console.log("🗺️ Loading 3D map model...");
       
-      const gltf = await new Promise<any>((resolve, reject) => {
+      const gltf = await new Promise<GLTF>((resolve, reject) => {
         this.gltfLoader.load(
-          '/newtown__krunker_map__game_map.glb',
+          `${import.meta.env.BASE_URL}newtown__krunker_map__game_map.glb`,
           (gltf) => resolve(gltf),
           (progress) => {
             console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
@@ -54,26 +56,28 @@ export class CustomScene extends THREE.Scene {
       });
 
       // Add the loaded model to the scene
-      this.mapModel = gltf.scene;
-      this.mapModel.position.set(0, 0, 0);
+      const mapModel = gltf.scene;
+      this.mapModel = mapModel;
+      mapModel.position.set(0, 0, 0);
       
       // Scale the model if needed (adjust as necessary)
-      this.mapModel.scale.setScalar(1);
+      mapModel.scale.setScalar(1);
       
       // Enable shadows for the model
-      this.mapModel.traverse((child) => {
+      mapModel.traverse((child) => {
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
           
           // Ensure materials are properly set up
           if (child.material) {
-            child.material.needsUpdate = true;
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.forEach(material => { material.needsUpdate = true; });
           }
         }
       });
 
-      this.addMesh(this.mapModel);
+      this.addMesh(mapModel);
       console.log("✅ 3D map model loaded successfully!");
       
       // Create physics colliders for the model
@@ -93,7 +97,7 @@ export class CustomScene extends THREE.Scene {
     
     // For now, create a simple ground plane physics collider
     // You can enhance this later with more detailed collision meshes
-    const RAPIER = (globalThis as any).RAPIER;
+    const RAPIER = getRapier();
     if (RAPIER) {
       const groundBodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(0, -1, 0);
       const groundBody = this.world.createRigidBody(groundBodyDesc);
