@@ -1,4 +1,4 @@
-import RAPIER from "@dimforge/rapier3d-compat";
+import * as RAPIER from "@dimforge/rapier3d-compat";
 
 let rapierModule: typeof RAPIER | null = null;
 
