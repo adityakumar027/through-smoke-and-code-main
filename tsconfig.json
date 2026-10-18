@@ -5,9 +5,10 @@
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    "paths": {"@dimforge/rapier3d-compat": ["./node_modules/@dimforge/rapier3d-compat/exports.d.ts"]},
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
