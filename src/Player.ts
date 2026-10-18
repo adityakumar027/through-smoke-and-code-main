@@ -156,7 +156,7 @@ export default class Player {
     const RAPIER = getRapier();
     const ray = new RAPIER.Ray(rayOrigin, rayDir);
     const hit = this.world.castRay(ray, 0.3, true);
-    const raycastGrounded = !!(hit && hit.toi !== undefined && hit.toi < 0.2);
+    const raycastGrounded = !!(hit && hit.timeOfImpact !== undefined && hit.timeOfImpact < 0.2);
     
     // Method 2: Velocity-based grounding (if falling very slowly or not at all)
     const velocityGrounded = Math.abs(velocity.y) < 0.1 && pos.y > 0.5;
