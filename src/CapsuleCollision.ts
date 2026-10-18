@@ -163,15 +163,17 @@ export class CapsuleCollision {
       { x: 0, y: 0, z: 0, w: 1 },
       { x: dir.x, y: dir.y, z: dir.z },
       shape,
+      0,
       len,
       true,
+      undefined,
       undefined,
       undefined,
       ex
     );
     if (!hit) return null;
     return {
-      distance: hit.toi,
+      distance: hit.time_of_impact,
       normal: new THREE.Vector3(hit.normal1.x, hit.normal1.y, hit.normal1.z),
       point: new THREE.Vector3(hit.witness1.x, hit.witness1.y, hit.witness1.z),
     };
@@ -182,11 +184,11 @@ export class CapsuleCollision {
       { x: origin.x, y: origin.y, z: origin.z },
       { x: dir.x, y: dir.y, z: dir.z }
     );
-    const hit = this.world.castRay(ray, len, true, undefined, undefined, ex);
+    const hit = this.world.castRayAndGetNormal(ray, len, true, undefined, undefined, undefined, ex);
     if (!hit) return null;
-    const pt = origin.clone().add(dir.clone().multiplyScalar(hit.toi));
+    const pt = origin.clone().add(dir.clone().multiplyScalar(hit.timeOfImpact));
     return {
-      distance: hit.toi,
+      distance: hit.timeOfImpact,
       normal: new THREE.Vector3(hit.normal.x, hit.normal.y, hit.normal.z),
       point: pt,
     };
